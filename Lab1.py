@@ -58,12 +58,26 @@ def arrayInsertionSort(list):
 def linkedListSortSegment(head: Link, compared: Link, position: int):
     link: Link = head
     startLink: Link = head
+    StartLinkI = 0
     i = 0
 
     middleI =  int(math.floor(position * 0.5))
     halfSize = middleI
 
     while link != None:
+
+        # Stepping forward
+        if halfSize == 0:
+            # End
+            if compared.number <= link.number:
+                print("Place num: " + str(compared.number) + ", into i: " + str(i))
+                break
+
+            link = link.link
+            i += 1
+            continue
+
+
         # Reaching mid point
         if i == middleI:
             # Debug print
@@ -71,10 +85,15 @@ def linkedListSortSegment(head: Link, compared: Link, position: int):
 
             # Setup starting point
             if compared.number > link.number: # Right - start point is middle link
-                startLink = link
                 middleI += int(math.floor(halfSize * 0.5))
+                startLink = link
+                StartLinkI = i
+                link = link.link
+                i += 1
             else:
                 middleI -= int(math.floor(halfSize * 0.5)) # Left - start point is same
+                link = startLink
+                i = StartLinkI
 
             sub = int(math.floor(halfSize * 0.5))
             if sub < 1:
@@ -82,13 +101,13 @@ def linkedListSortSegment(head: Link, compared: Link, position: int):
             halfSize -= sub
 
             # End placing
-            if halfSize == 0:
-                print("Place num: " + str(compared.number) + ", into i: " + str(i))
-                break
+            #if halfSize == 0:
+                #print("Place num: " + str(compared.number) + ", into i: " + str(i))
+                #break
 
             # Restart conting
-            link = startLink 
-            i = 0
+            #link = startLink 
+            #i = 0 # This should be of startlink id
             continue
 
         # Progress list
@@ -111,7 +130,7 @@ def linkedListInsertionSort(head: Link):
 
 
 # Test list 
-singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 18)
+singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
 iterateLinkedList(singleLinkedList)
 linkedListInsertionSort(singleLinkedList)
 
