@@ -79,7 +79,7 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                     #compared.link = compared.link.link
                     #link = compared.link
                     #link = link
-                if compared.number != link.number:
+                if i != position:
                     parent.link = compared.link
                     compared.link = link
                 else:
@@ -168,7 +168,7 @@ def linkedListInsertionSort(head: Link):
 
 # Test list 
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
-singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 1, 2)
+singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 3, 1, 2)
 iterateLinkedList(singleLinkedList)
 singleLinkedList = linkedListInsertionSort(singleLinkedList)
 iterateLinkedList(singleLinkedList)
