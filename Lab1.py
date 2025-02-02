@@ -73,18 +73,31 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                 print("Place num: " + str(compared.number) + ", into i: " + str(i))
 
                 # Relink
-                parent.link = compared.link
-                compared.link = link
+                #parent.link = compared.link
+                
+                #if compared.number == link.number:
+                    #compared.link = compared.link.link
+                    #link = compared.link
+                    #link = link
+                if compared.number != link.number:
+                    parent.link = compared.link
+                    compared.link = link
+                else:
+                    parent = link
+                #link = link.link
+
                 #startLink = 
 
                 # Change head
                 if i == 0:
                     head = compared
+                else: 
+                    startLink.link = compared
 
                 #startLink.link = compared
 
                 #iterateLinkedList(head)
-                return (head, link)
+                return (head, parent)
 
             StartLinkI = link
             link = link.link
@@ -142,8 +155,8 @@ def linkedListInsertionSort(head: Link):
         if i > 0:
             linksTuple = linkedListSortSegment(head, link, parent, i)
             head = linksTuple[0]
-            link = parent
-            #iterateLinkedList(head)
+            link = linksTuple[1]
+            iterateLinkedList(head)
             #iterateLinkedList(head)
         # Progress single level iteration
         parent = link
@@ -155,7 +168,7 @@ def linkedListInsertionSort(head: Link):
 
 # Test list 
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
-singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 3, 1, 2)
+singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 1, 2)
 iterateLinkedList(singleLinkedList)
 singleLinkedList = linkedListInsertionSort(singleLinkedList)
 iterateLinkedList(singleLinkedList)
