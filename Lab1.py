@@ -55,7 +55,7 @@ def arrayInsertionSort(list):
 
 
 # Sort linked list segment
-def linkedListSortSegment(head: Link, compared: Link, position: int):
+def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: int):
     link: Link = head
     startLink: Link = head
     StartLinkI = 0
@@ -71,8 +71,22 @@ def linkedListSortSegment(head: Link, compared: Link, position: int):
             # End
             if compared.number <= link.number:
                 print("Place num: " + str(compared.number) + ", into i: " + str(i))
-                break
 
+                # Relink
+                parent.link = compared.link
+                compared.link = link
+                #startLink = 
+
+                # Change head
+                if i == 0:
+                    head = compared
+
+                #startLink.link = compared
+
+                #iterateLinkedList(head)
+                return (head, link)
+
+            StartLinkI = link
             link = link.link
             i += 1
             continue
@@ -114,23 +128,35 @@ def linkedListSortSegment(head: Link, compared: Link, position: int):
         link = link.link
         i += 1
 
+    print("No relink")
+
 # Linked list insertion sort
 def linkedListInsertionSort(head: Link):
     link = head
+    parent = None
     i = 0
 
     print("Sorting----------------------")
 
     while link != None:
-        if i == 5:
-            linkedListSortSegment(head, link, i)
+        if i > 0:
+            linksTuple = linkedListSortSegment(head, link, parent, i)
+            head = linksTuple[0]
+            link = parent
+            #iterateLinkedList(head)
+            #iterateLinkedList(head)
         # Progress single level iteration
+        parent = link
         link = link.link
         i += 1
 
+    return head
+
 
 # Test list 
-singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
+#singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
+singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 3, 1, 2)
 iterateLinkedList(singleLinkedList)
-linkedListInsertionSort(singleLinkedList)
+singleLinkedList = linkedListInsertionSort(singleLinkedList)
+iterateLinkedList(singleLinkedList)
 
