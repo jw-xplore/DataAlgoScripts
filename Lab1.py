@@ -12,7 +12,7 @@ class Link:
         self.number = num
 
 #----------------------------------------
-# Single list functions
+# Singly linked list functions
 #----------------------------------------
 
 def createLinkedList(*params):
@@ -40,19 +40,10 @@ def iterateLinkedList(head: Link):
         link = link.link
         i += 1
 
-# Array insertion sort
-def arrayInsertionSort(list):
-    for i in range(1, len(list) - 1):
-        j = i
-        while j > 0 and list[j - 1] > list[j]:
-            num = list[j]
-            list[j - 1]
-            list[j] = num
 
-
-            j -= 1
-
-
+#----------------------------------------
+# Sorting
+#----------------------------------------
 
 # Sort linked list segment
 def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: int):
@@ -73,20 +64,11 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                 print("Place num: " + str(compared.number) + ", into i: " + str(i))
 
                 # Relink
-                #parent.link = compared.link
-                
-                #if compared.number == link.number:
-                    #compared.link = compared.link.link
-                    #link = compared.link
-                    #link = link
                 if i != position:
                     parent.link = compared.link
                     compared.link = link
                 else:
                     parent = link
-                #link = link.link
-
-                #startLink = 
 
                 # Change head
                 if i == 0:
@@ -94,9 +76,7 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                 else: 
                     startLink.link = compared
 
-                #startLink.link = compared
-
-                #iterateLinkedList(head)
+                # Return new head and compared number parent
                 return (head, parent)
 
             StartLinkI = link
@@ -104,12 +84,8 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
             i += 1
             continue
 
-
         # Reaching mid point
         if i == middleI:
-            # Debug print
-            # print(str(i) + ") pos = " + str(link.number))
-
             # Setup starting point
             if compared.number > link.number: # Right - start point is middle link
                 middleI += int(math.floor(halfSize * 0.5))
@@ -122,26 +98,17 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                 link = startLink
                 i = StartLinkI
 
+            # Shrink changing point
             sub = int(math.floor(halfSize * 0.5))
             if sub < 1:
                 sub = 1
             halfSize -= sub
 
-            # End placing
-            #if halfSize == 0:
-                #print("Place num: " + str(compared.number) + ", into i: " + str(i))
-                #break
-
-            # Restart conting
-            #link = startLink 
-            #i = 0 # This should be of startlink id
             continue
 
         # Progress list
         link = link.link
         i += 1
-
-    print("No relink")
 
 # Linked list insertion sort
 def linkedListInsertionSort(head: Link):
@@ -157,7 +124,7 @@ def linkedListInsertionSort(head: Link):
             head = linksTuple[0]
             link = linksTuple[1]
             iterateLinkedList(head)
-            #iterateLinkedList(head)
+
         # Progress single level iteration
         parent = link
         link = link.link
