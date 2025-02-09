@@ -1,4 +1,29 @@
 import math
+import random
+
+#----------------------------------------
+# Create testing data
+#----------------------------------------
+
+def createTestData(size: int, sorted: bool, randMin: int, randMax: int, nudgeSort = False):
+    
+    file = open("testData.txt", "w")
+    number = random.randrange(randMin, randMax)
+
+    for i in range(0, size):
+        file.write(str(number) + "\n")
+
+        if sorted == True:
+            number += random.randrange(randMin, randMax)
+        else:
+            number = random.randrange(randMin, randMax)
+
+    # Add smaller number to end to break sort
+    if nudgeSort == True:
+        number = number - randMax - 1
+        file.write(str(number) + "\n")
+
+    file.close()
 
 #----------------------------------------
 # Single linked list link class
@@ -10,10 +35,6 @@ class Link:
 
     def __init__(self, num):
         self.number = num
-
-#----------------------------------------
-# Singly linked list functions
-#----------------------------------------
 
 def createLinkedList(*params):
 
@@ -40,6 +61,46 @@ def iterateLinkedList(head: Link):
         link = link.link
         i += 1
 
+def linkedListFromDocument():
+
+    head:Link = None
+    link:Link = None
+
+    with open('testData.txt', 'r') as file:
+        for line in file:
+            if head == None:
+                head = Link(int(line))
+                link = head
+            else:
+                nextLink = Link(int(line))
+                link.link = nextLink
+                link = nextLink
+
+    return head
+
+#----------------------------------------
+# Doubly linked list link class
+#----------------------------------------
+
+class DualLink(Link):
+    link = None
+
+    def __init__(self, num, parent, link):
+        self.number = num
+        self.parent = parent
+        self.link = link
+
+def createDualLinkedList(*params):
+
+    head = DualLink(params[0], None, None)
+    link = head
+
+    for i in range(1, len(params)):
+        nextLink = DualLink(params[i], link, None)
+        link.link = nextLink
+        link = nextLink
+
+    return head
 
 #----------------------------------------
 # Sorting
@@ -61,7 +122,8 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
         if halfSize == 0:
             # End
             if compared.number <= link.number:
-                print("Place num: " + str(compared.number) + ", into i: " + str(i))
+                #iterateLinkedList(head)
+                #print("Place num: " + str(compared.number) + ", into i: " + str(i))
 
                 # Relink
                 if i != position:
@@ -73,9 +135,11 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
                 # Change head
                 if i == 0:
                     head = compared
-                else: 
-                    startLink.link = compared
+                else:
+                    if i != position:
+                        startLink.link = compared
 
+                #iterateLinkedList(head)
                 # Return new head and compared number parent
                 return (head, parent)
 
@@ -123,7 +187,6 @@ def linkedListInsertionSort(head: Link):
             linksTuple = linkedListSortSegment(head, link, parent, i)
             head = linksTuple[0]
             link = linksTuple[1]
-            iterateLinkedList(head)
 
         # Progress single level iteration
         parent = link
@@ -135,8 +198,9 @@ def linkedListInsertionSort(head: Link):
 
 # Test list 
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
-singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 84, 41, 6, 3, 1, 2)
+#singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 41, 84, 6, 3, 1, 2)
+createTestData(1000, True, 1, 5, True)
+singleLinkedList = linkedListFromDocument()
 iterateLinkedList(singleLinkedList)
 singleLinkedList = linkedListInsertionSort(singleLinkedList)
 iterateLinkedList(singleLinkedList)
-
