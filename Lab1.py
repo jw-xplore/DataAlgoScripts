@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 #----------------------------------------
 # Create testing data
@@ -197,10 +198,17 @@ def linkedListInsertionSort(head: Link):
 
 
 # Test list 
+
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
 #singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 41, 84, 6, 3, 1, 2)
-createTestData(1000, True, 1, 5, True)
+#createTestData(100000, False, 1, 5)
+
 singleLinkedList = linkedListFromDocument()
-iterateLinkedList(singleLinkedList)
+#iterateLinkedList(singleLinkedList)
+
+# Sort single linked list
+start_time = time.time()
 singleLinkedList = linkedListInsertionSort(singleLinkedList)
-iterateLinkedList(singleLinkedList)
+#iterateLinkedList(singleLinkedList)
+
+print("Process finished --- %s seconds ---" % (time.time() - start_time))
