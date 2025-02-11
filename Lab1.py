@@ -2,6 +2,9 @@ import math
 import random
 import time
 
+global operations
+operations = 0
+
 #----------------------------------------
 # Create testing data
 #----------------------------------------
@@ -25,6 +28,27 @@ def createTestData(size: int, sorted: bool, randMin: int, randMax: int, nudgeSor
         file.write(str(number) + "\n")
 
     file.close()
+
+
+#----------------------------------------
+# Create reverse testing data
+#----------------------------------------
+
+def createReverseTestData(size: int, sorted: bool, randMin: int, randMax: int, nudgeSort = False):
+    
+    file = open("testData.txt", "w")
+   
+
+    for i in range(0, size):
+        file.write(str(size-i)+ "\n")
+
+     
+  
+
+    file.close()
+
+
+
 
 #----------------------------------------
 # Single linked list link class
@@ -103,6 +127,35 @@ def createDualLinkedList(*params):
 
     return head
 
+def iterateDualLinkedList(head: Link):
+
+    link = head
+    i = 0
+
+    print("Iterate:")
+
+    while link != None:
+        print(str(i) + ". num: " + str(link.number))
+        link = link.link
+        i += 1
+
+def dualLinkedListFromDocument():
+
+    head:Link = None
+    link:Link = None
+
+    with open('testData.txt', 'r') as file:
+        for line in file:
+            if head == None:
+                head = Link(int(line))
+                link = head
+            else:
+                nextLink = Link(int(line))
+                link.link = nextLink
+                link = nextLink
+
+    return head
+
 #----------------------------------------
 # Sorting
 #----------------------------------------
@@ -113,12 +166,13 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
     startLink: Link = head
     StartLinkI = 0
     i = 0
+    global operations
 
     middleI =  int(math.floor(position * 0.5))
     halfSize = middleI
 
     while link != None:
-
+        operations = operations + 1
         # Stepping forward
         if halfSize == 0:
             # End
@@ -176,7 +230,7 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
         i += 1
 
 # Linked list insertion sort
-def linkedListInsertionSort(head: Link):
+def linkedListBinsertionSort(head: Link):
     link = head
     parent = None
     i = 0
@@ -184,6 +238,7 @@ def linkedListInsertionSort(head: Link):
     print("Sorting----------------------")
 
     while link != None:
+        
         if i > 0:
             linksTuple = linkedListSortSegment(head, link, parent, i)
             head = linksTuple[0]
@@ -201,14 +256,22 @@ def linkedListInsertionSort(head: Link):
 
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
 #singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 41, 84, 6, 3, 1, 2)
-#createTestData(100000, False, 1, 5)
+#createTestData(15000, True, 1, 5)
+createReverseTestData(150, True, 1, 5)
 
-singleLinkedList = linkedListFromDocument()
+
+#singleLinkedList = LinkedListFromDocument()
 #iterateLinkedList(singleLinkedList)
+
+dualLinkedList = dualLinkedListFromDocument()
 
 # Sort single linked list
 start_time = time.time()
-singleLinkedList = linkedListInsertionSort(singleLinkedList)
+dualLinkedList = linkedListBinsertionSort(dualLinkedList)
+
+#singleLinkedList = linkedListInsertionSort(singleLinkedList)
 #iterateLinkedList(singleLinkedList)
 
-print("Process finished --- %s seconds ---" % (time.time() - start_time))
+
+
+print("Process finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
