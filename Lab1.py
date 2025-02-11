@@ -110,7 +110,7 @@ def linkedListFromDocument():
 class DualLink(Link):
     link = None
 
-    def __init__(self, num, parent, link):
+    def __init__(self, num: int, parent: Link, link: Link):
         self.number = num
         self.parent = parent
         self.link = link
@@ -127,7 +127,7 @@ def createDualLinkedList(*params):
 
     return head
 
-def iterateDualLinkedList(head: Link):
+def iterateDualLinkedList(head: DualLink):
 
     link = head
     i = 0
@@ -135,22 +135,26 @@ def iterateDualLinkedList(head: Link):
     print("Iterate:")
 
     while link != None:
-        print(str(i) + ". num: " + str(link.number))
+        num:str = "none"
+        if link.parent != None:
+            num = str(link.parent.number);
+        
+        print(str(i) + ". num: " + str(link.number) + "(" + num + ")")
         link = link.link
         i += 1
 
 def dualLinkedListFromDocument():
 
-    head:Link = None
-    link:Link = None
+    head:DualLink = None
+    link:DualLink = None
 
     with open('testData.txt', 'r') as file:
         for line in file:
             if head == None:
-                head = Link(int(line))
+                head = DualLink(int(line), None, None)
                 link = head
             else:
-                nextLink = Link(int(line))
+                nextLink = DualLink(int(line), link, None)
                 link.link = nextLink
                 link = nextLink
 
@@ -229,6 +233,86 @@ def linkedListSortSegment(head: Link, compared: Link, parent: Link, position: in
         link = link.link
         i += 1
 
+# Sort double linked list segment
+def sortDualLinkSegment(head: DualLink, compared: DualLink, parent: DualLink, position: int):
+    link: DualLink = head
+    startLink: DualLink = head
+    StartLinkI = 0
+    i = 0
+    global operations
+
+    middleI =  int(math.floor(position * 0.5))
+    halfSize = middleI
+
+    backStep: bool = False
+
+    while link != None:
+        operations = operations + 1
+        # Stepping forward
+        if halfSize == 0 or i == 0:
+            # End
+            if compared.number <= link.number:
+
+                # Relink
+                if i != position:
+                    parent.link = compared.link
+                    compared.link = link
+                else:
+                    parent = link
+
+                # Change head
+                if i == 0:
+                    head = compared
+                else:
+                    if i != position:
+                        startLink.link = compared
+
+                # Return new head and compared number parent
+                return (head, parent)
+
+            StartLinkI = link
+
+            # Progress list
+            if backStep == False:
+                link = link.link
+                i += 1
+            else:
+                link = link.parent
+                i -= 1
+            continue
+
+        # Reaching mid point
+        if i == middleI:
+            # Setup starting point
+            if compared.number > link.number: # Right - start point is middle link
+                middleI += int(math.floor(halfSize * 0.5))
+                startLink = link
+                StartLinkI = i
+                link = link.link
+                i += 1
+                backStep = False
+            else:
+                middleI -= int(math.floor(halfSize * 0.5)) # Left - start point is same
+                backStep = True
+
+            # Shrink changing point
+            sub = int(math.floor(halfSize * 0.5))
+            if sub < 1:
+                sub = 1
+            halfSize -= sub
+
+            continue
+
+        # Progress list
+        if backStep == False:
+            link = link.link
+            i += 1
+        else:
+            link = link.parent
+            i -= 1
+
+    return
+
 # Linked list insertion sort
 def linkedListBinsertionSort(head: Link):
     link = head
@@ -240,7 +324,13 @@ def linkedListBinsertionSort(head: Link):
     while link != None:
         
         if i > 0:
-            linksTuple = linkedListSortSegment(head, link, parent, i)
+            linksTuple: tuple
+
+            if isinstance(link, DualLink) == False:
+                linksTuple = linkedListSortSegment(head, link, parent, i) # Singly linked list sorting
+            else:
+                linksTuple = sortDualLinkSegment(head, link, parent, i) # Double linked list sorting
+
             head = linksTuple[0]
             link = linksTuple[1]
 
@@ -257,21 +347,21 @@ def linkedListBinsertionSort(head: Link):
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
 #singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 41, 84, 6, 3, 1, 2)
 #createTestData(15000, True, 1, 5)
-createReverseTestData(150, True, 1, 5)
-
+createTestData(10, False, 1, 5)
 
 #singleLinkedList = LinkedListFromDocument()
 #iterateLinkedList(singleLinkedList)
 
 dualLinkedList = dualLinkedListFromDocument()
+iterateDualLinkedList(dualLinkedList)
 
 # Sort single linked list
 start_time = time.time()
 dualLinkedList = linkedListBinsertionSort(dualLinkedList)
 
 #singleLinkedList = linkedListInsertionSort(singleLinkedList)
-#iterateLinkedList(singleLinkedList)
 
 
 
 print("Process finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
+iterateLinkedList(dualLinkedList)
