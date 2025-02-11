@@ -250,22 +250,39 @@ def sortDualLinkSegment(head: DualLink, compared: DualLink, parent: DualLink, po
         operations = operations + 1
         # Stepping forward
         if halfSize == 0 or i == 0:
+
             # End
             if compared.number <= link.number:
 
                 # Relink
+                #compared.parent = link.parent
+
                 if i != position:
                     parent.link = compared.link
+                    
+                    if compared.link != None:
+                        compared.link.parent = compared.parent
+
+                    compared.parent = link.parent
                     compared.link = link
+
+                    if compared.link != None:
+                        compared.link.parent = compared
                 else:
                     parent = link
+
+                #if i != position:
+                #compared.parent = link.parent
 
                 # Change head
                 if i == 0:
                     head = compared
+                    link.parent = compared
+                    compared.parent = None
                 else:
                     if i != position:
                         startLink.link = compared
+                        #link.parent.link = compared
 
                 # Return new head and compared number parent
                 return (head, parent)
@@ -347,21 +364,27 @@ def linkedListBinsertionSort(head: Link):
 #singleLinkedList = createLinkedList(1, 3, 5, 7, 9, 8)
 #singleLinkedList = createLinkedList(9, 8, 7, 3, 4, 41, 84, 6, 3, 1, 2)
 #createTestData(15000, True, 1, 5)
-createTestData(10, False, 1, 5)
 
-#singleLinkedList = LinkedListFromDocument()
-#iterateLinkedList(singleLinkedList)
+# Generate data
+createTestData(10000, False, 1, 20)
 
+# Singly linked list
+linkedList = linkedListFromDocument()
+
+operations = 0
+start_time = time.time()
+linkedList = linkedListBinsertionSort(linkedList)
+
+print("Singly linked list sort finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
+
+
+# Doubly linked list
 dualLinkedList = dualLinkedListFromDocument()
-iterateDualLinkedList(dualLinkedList)
 
-# Sort single linked list
+operations = 0
 start_time = time.time()
 dualLinkedList = linkedListBinsertionSort(dualLinkedList)
 
-#singleLinkedList = linkedListInsertionSort(singleLinkedList)
+print("Doubly linked list sort finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
 
-
-
-print("Process finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
-iterateLinkedList(dualLinkedList)
+#iterateDualLinkedList(dualLinkedList)
