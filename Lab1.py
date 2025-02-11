@@ -34,16 +34,13 @@ def createTestData(size: int, sorted: bool, randMin: int, randMax: int, nudgeSor
 # Create reverse testing data
 #----------------------------------------
 
-def createReverseTestData(size: int, sorted: bool, randMin: int, randMax: int, nudgeSort = False):
+def createReverseTestData(size: int):
     
     file = open("testData.txt", "w")
    
 
     for i in range(0, size):
         file.write(str(size-i)+ "\n")
-
-     
-  
 
     file.close()
 
@@ -366,9 +363,19 @@ def linkedListBinsertionSort(head: Link):
 #createTestData(15000, True, 1, 5)
 
 # Generate data
-createTestData(10000, False, 1, 20)
+createTestData(10, False, 1, 100) # Pure random
+#createTestData(5000, False, 1, 100) # Pure random
+#createTestData(5000, True, 1, 5) # Sorted
+#createTestData(5000, True, 1, 5, True) # Sorted but last element is smaller than second last
+#createReverseTestData(5000) # Reversed from 5000 to 1
 
 # Singly linked list
+# NOTE 
+# Number of entries: 5000
+# Random data: seconds = 0.9262294769287109, operations = 12530732
+# Sorted data: seconds = 0.9519603252410889, operations = 12502499
+# Almost sorted data: seconds = 0.9383761882781982, operations = 12507500
+# Reversed data: seconds = 0.9307644367218018, operations = 12576279
 linkedList = linkedListFromDocument()
 
 operations = 0
@@ -376,9 +383,19 @@ start_time = time.time()
 linkedList = linkedListBinsertionSort(linkedList)
 
 print("Singly linked list sort finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
-
+iterateLinkedList(linkedList)
 
 # Doubly linked list
+# NOTE 
+# Using same data as singly linked list (5000 entries)
+# Random data: Generaly takes less number of operations (iterations) but takes longer execution time than singly linked list.
+#   - seconds = 1.1462922096252441, operations = 12368074
+# Sorted data: Takes same amount of operations but longer time.
+#   - seconds = 1.1846976280212402, operations = 12502499
+# Almost sorted data: Takes same amount of operations but + 1 operation and longer time.
+#   - seconds = 1.1612472534179688, operations = 12507501
+# Reversed data: Sortign is significantly faster than singly linked list.
+#   - seconds = 0.004580974578857422, operations = 4999
 dualLinkedList = dualLinkedListFromDocument()
 
 operations = 0
@@ -386,5 +403,4 @@ start_time = time.time()
 dualLinkedList = linkedListBinsertionSort(dualLinkedList)
 
 print("Doubly linked list sort finished --- %s seconds ---" % (time.time() - start_time) + " operations = " + str(operations))
-
-#iterateDualLinkedList(dualLinkedList)
+iterateDualLinkedList(dualLinkedList)
