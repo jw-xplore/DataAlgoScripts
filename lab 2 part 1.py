@@ -32,6 +32,8 @@ def stacks(word):
 
    #checks both arrays from the end
     for j in range(len(wordArray)):
+        print("first stack pop: " , listUp[j])
+        print("second stack pop: " , listDown[j])
         if listUp[j] != listDown[j]:
             correct = False
             print(correct)
@@ -72,6 +74,8 @@ def stackQueue(word):
     length = len(listStack)-1
     count = length
     for j in reversed(range(len(wordArray))):
+        print("stack pop: ",listStack[j])
+        print("queue pop: ",listQueue[length-count])
         if listStack[j] != listQueue[length-count]:
             correct = False
             print(correct)
