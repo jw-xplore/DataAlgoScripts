@@ -115,12 +115,13 @@ x = input()
 start_time = time.time()
 stacks(x)
 time1 = time.time()
-print("stack only time is : " , time1-start_time)
 
 
 start_time2 = time.time()
 stackQueue(x)
 time2 = time.time()
+
+print("stack only time is : " , time1-start_time)
 print("stack and queue time is : " , time2-start_time2)
 
 
