@@ -1,64 +1,45 @@
+def largestSubListSum(list):
 
-operation = 0
-
-def largestSubListSum(list, start = 0):
-
-    leftRes = None
-    rightRes = None
     lenL = len(list)
+
+    # Return single element result
+    if lenL == 1:
+        res = list[0]
+        return (res, res, res, res)
+
     pivot: int = int(lenL / 2)
 
-    # Split list
-    if (lenL > 1):
-        # Left
-        leftList = list[:pivot]
-        leftRes = largestSubListSum(leftList, start)
+    # Left
+    leftList = list[:pivot]
+    leftRes = largestSubListSum(leftList)
 
-        # Right
-        rightList = list[pivot:]
-        rightRes = largestSubListSum(rightList, start + pivot)
+    # Right
+    rightList = list[pivot:]
+    rightRes = largestSubListSum(rightList)
 
-    # Sum
-    sum = 0
-    if lenL == 1:
-        sum = list[0]
-    else:
-        # Get largest left value
-        leftLargestSum = 0
-        leftLargestSumTemp = 0
-        for i in range(pivot - 1, -1, -1):
-            leftLargestSumTemp += list[i]
-            if leftLargestSumTemp > leftLargestSum:
-                leftLargestSum = leftLargestSumTemp
-        
-        print("largest left: ", leftLargestSum)
+    # Sum results
+    sum = leftRes[0] + rightRes[0]
 
-        rightLargestSum = 0
-        rightLargestSumTemp = 0
-        for i in range(pivot, lenL, 1):
-            rightLargestSumTemp += list[i]
-            if rightLargestSumTemp > rightLargestSum:
-                rightLargestSum = rightLargestSumTemp
+    # Largest left most result - either left or combine left sum with largest right result
+    largestLeft = leftRes[1]
+    if largestLeft < (leftRes[0] + rightRes[1]):
+        largestLeft = leftRes[0] + rightRes[1]
+    
+    # Largest right most result - either right or combine right sum with largest left result
+    largestRight = rightRes[2]
+    if largestRight < (leftRes[2] + rightRes[0]):
+        largestRight = leftRes[2] + rightRes[0]
 
-        print("largest right: ", rightLargestSum)
+    # Select largest sum from combinations
+    largestSum = leftRes[2] + rightRes[1]
+    if largestSum < leftRes[3]:
+        largestSum = leftRes[3]
+    if largestSum < rightRes[3]:
+        largestSum = rightRes[3]
 
-        # Get only positive or sum
-        if leftLargestSum > 0 and rightLargestSum > 0: # sum
-            sum = leftLargestSum + rightLargestSum
-        elif leftLargestSum > 0 and rightLargestSum < 0: # left
-            sum = leftLargestSum
-        elif leftLargestSum < 0 and rightLargestSum > 0: # right
-            sum = rightLargestSum
-        else:
-            sum = 0 # none
-
-        sum = leftLargestSum + rightLargestSum
-
-    print("sum of ", list, "is: ", sum)
-
-    return sum
+    return (sum, largestLeft, largestRight, largestSum)
 
 
-numbers = [ -1, 2, -3, 4, 5, -4, 8]
+numbers = [ -2, 1, -3, 4, -1, 2, 1, -5, 4]
 res = largestSubListSum(numbers)
-print("res: ", res)
+print("res: ", res[3])
