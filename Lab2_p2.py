@@ -1,3 +1,34 @@
+import random
+
+#----------------------------------------
+# Create testing data
+#----------------------------------------
+
+def createTestData(size: int, randMin: int, randMax: int):
+    
+    file = open("testData.txt", "w")
+
+    for i in range(0, size):
+        number = random.randrange(randMin, randMax)
+        if number == 0:
+            number = random.choice([randMin, randMax])
+
+        file.write(str(number) + "\n")
+
+    file.close()
+
+def listFromTestData():
+    list = []
+    with open('testData.txt', 'r') as file:
+        for line in file:
+            list.append(int(line))
+
+    return list
+
+#----------------------------------------
+# Algorithm
+#----------------------------------------
+
 def largestSubListSum(list):
 
     lenL = len(list)
@@ -40,6 +71,8 @@ def largestSubListSum(list):
     return (sum, largestLeft, largestRight, largestSum)
 
 
-numbers = [ -2, 1, -3, 4, -1, 2, 1, -5, 4]
+createTestData(10, -10, 10)
+numbers = listFromTestData()
+print("Numbers: ", numbers)
 res = largestSubListSum(numbers)
-print("res: ", res[3])
+print("Res: ", res[3])
