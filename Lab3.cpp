@@ -70,6 +70,78 @@ void add(BTSNode<T>* node, T value)
     }
 }
 
+// Return highest level node value
+template <typename T>
+int height(BTSNode<T>* node)
+{
+    // No node
+    if (node == nullptr)
+        return 0;
+
+    // Calculate height
+    int leftH = height(node->leftNode);
+    int rightH = height(node->rightNode);
+
+    int val = leftH;
+    if (val < rightH)
+        val = rightH;
+
+    val += 1;
+
+    return val;
+}
+
+// Return difference between height of left and right subtrees from seleted root node
+// Positive = left heavy
+// Negative = right heavy
+// 0 = balanced
+template <typename T>
+int weight(BTSNode<T>* node)
+{
+    int leftH = height(node->leftNode);
+    int rightH = height(node->rightNode);
+
+    return leftH - rightH;
+}
+
+template <typename T> int sgn(T val)
+{
+    return (T(0) < val) - (val < T(0));
+}
+
+template <typename T>
+void balance(BTSNode<T>* node, int parentWeight = 0)
+{
+    // No child
+    if (node->leftNode == nullptr && node->rightNode == nullptr)
+        return;
+
+    // Check balance and children balance
+    int w = weight(node);
+
+    if (node->leftNode != nullptr)
+        balance(node->leftNode, w);
+
+    if (node->rightNode != nullptr)
+        balance(node->rightNode, w);
+
+    // No need to rebalance
+    if (sgn(w) == sgn(parentWeight) && abs(w) <= 1)
+        return;
+
+    // Right rotation
+    if (w > 0)
+    {
+
+    }
+
+    // Left rotation
+    if (w < 0)
+    {
+
+    }
+}
+
 //--------------------------------------------
 // Debug
 //--------------------------------------------
@@ -77,10 +149,13 @@ void add(BTSNode<T>* node, T value)
 template <typename T>
 void printNode(BTSNode<T>* node, int isRight = -1)
 {
+    if (node == nullptr)
+        return;
+
     // Iterate
     if (node->leftNode != nullptr)
         printNode(node->leftNode, 0);
-    else
+    if (node->rightNode != nullptr)
         printNode(node->rightNode, 1);
 
     // Print
@@ -93,9 +168,11 @@ void printNode(BTSNode<T>* node, int isRight = -1)
         std::cout << "r: " << node->value;
         break;
     default:
-        std::cout << node->value;
+        std::cout << "root: " << node->value;
         break;
     }
+
+    std::cout << "\n";
 }
 
 template <typename T>
@@ -112,8 +189,11 @@ void printTree(BTSNode<T>* root)
 
 int main() {
     BTSNode<int>* root = new BTSNode<int>(5);
-    add<int>(root, 1);
+    add<int>(root, 2);
+    //add<int>(root, 3);
     add<int>(root, 10);
     printTree<int>(root);
+    std::cout << "h: " << height<int>(root) << "\n";
+    std::cout << "we: " << weight<int>(root) << "\n";
     return 0;
 }
