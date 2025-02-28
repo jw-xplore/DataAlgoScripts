@@ -21,6 +21,8 @@ public:
     }
 };
 
+template <typename T> BTSNode<T>* balance(BTSNode<T>* node);
+
 // Search for value in tree
 template <typename T>
 BTSNode<T>* find(BTSNode<T>* node, T value)
@@ -43,31 +45,47 @@ BTSNode<T>* find(BTSNode<T>* node, T value)
 
 // Insert value to tree
 template <typename T>
-void add(BTSNode<T>* node, T value)
+BTSNode<T>* add(BTSNode<T>* node, T value)
 {
     // Fail
     if (node == nullptr)
-        return;
+        return node;
 
     // Left
     if (value < node->value)
     {
         if (node->leftNode == nullptr)
-            node->leftNode = new BTSNode<T>(value, node); // Add
-        else
-            add(node->leftNode, value); // Iterate to left
+        {
+            // Add
+            node->leftNode = new BTSNode<T>(value, node);
 
-        return;
+            /*
+            if (node->parent != nullptr)
+                node->parent = balance<T>(node->parent);
+            */
+        }
+        else
+            node = add<T>(node->leftNode, value); // Iterate to left
     }
 
     // Right
     if (value > node->value)
     {
         if (node->rightNode == nullptr)
-            node->rightNode = new BTSNode<T>(value, node); // Add
+        {
+            // Add
+            node->rightNode = new BTSNode<T>(value, node);
+
+            /*
+            if (node->parent != nullptr)
+                node->parent = balance<T>(node->parent);
+            */
+        }
         else
-            add(node->rightNode, value); // Iterate to left
+            node = add<T>(node->rightNode, value); // Iterate to left
     }
+
+    return node;
 }
 
 // Return highest level node value
@@ -110,36 +128,94 @@ template <typename T> int sgn(T val)
 }
 
 template <typename T>
-void balance(BTSNode<T>* node, int parentWeight = 0)
+BTSNode<T>* balance(BTSNode<T>* node)
 {
     // No child
     if (node->leftNode == nullptr && node->rightNode == nullptr)
-        return;
+        return node;
+
+    // Rebalance children
+    if (node->leftNode != nullptr)
+        balance(node->leftNode);
+
+    if (node->rightNode != nullptr)
+        balance(node->rightNode);
 
     // Check balance and children balance
     int w = weight(node);
 
-    if (node->leftNode != nullptr)
-        balance(node->leftNode, w);
-
-    if (node->rightNode != nullptr)
-        balance(node->rightNode, w);
-
     // No need to rebalance
-    if (sgn(w) == sgn(parentWeight) && abs(w) <= 1)
-        return;
+    if (abs(w) <= 1)
+        return node;
 
-    // Right rotation
+    // Rotation values
+    BTSNode<T>* newRoot = nullptr;
+    BTSNode<T>* smallest = nullptr; // left
+    BTSNode<T>* largest = nullptr; // rigth
+
+    // Left heavy
     if (w > 0)
     {
+        int lw = weight(node->leftNode);
 
+        // Right rotation (child is also left heavy)
+        if (lw > 0)
+        {
+            newRoot = node->leftNode;
+            smallest = node->leftNode->leftNode;
+            largest = node;
+
+            largest->leftNode = nullptr;
+        }
+
+        // Left-right rotation
+        if (lw < 0)
+        {
+            newRoot = node->leftNode->rightNode;
+            smallest = node->leftNode;
+            largest = node;
+
+            smallest->rightNode = nullptr;
+            largest->leftNode = nullptr;
+        }
     }
 
-    // Left rotation
+    // Right heavy
     if (w < 0)
     {
+        int rw = weight(node->rightNode);
 
+        // Left rotation (child is also right heavy)
+        if (rw < 0)
+        {
+            newRoot = node->rightNode;
+            smallest = node;
+            largest = node->rightNode->rightNode;
+
+            smallest->rightNode = nullptr;
+        }
+
+        // Right-left rotation
+        if (rw > 0)
+        {
+            newRoot = node->rightNode->leftNode;
+            smallest = node;
+            largest = node->rightNode;
+
+            smallest->rightNode = nullptr;
+            largest->leftNode = nullptr;
+        }
     }
+
+    // Apply rotation
+    newRoot->parent = node->parent;
+    largest->parent = newRoot;
+    smallest->parent = newRoot;
+
+    node = newRoot;
+    node->leftNode = smallest;
+    node->rightNode = largest;
+    return node;
 }
 
 //--------------------------------------------
@@ -162,10 +238,10 @@ void printNode(BTSNode<T>* node, int isRight = -1)
     switch (isRight)
     {
     case 0:
-        std::cout << "l: " << node->value;
+        std::cout << "l(" << node->parent->value << "): " << node->value;
         break;
     case 1:
-        std::cout << "r: " << node->value;
+        std::cout << "r(" << node->parent->value << "): " << node->value;
         break;
     default:
         std::cout << "root: " << node->value;
@@ -189,11 +265,26 @@ void printTree(BTSNode<T>* root)
 
 int main() {
     BTSNode<int>* root = new BTSNode<int>(5);
+    add<int>(root, 8);
+    //d<int>(root, 6);
     add<int>(root, 2);
-    //add<int>(root, 3);
     add<int>(root, 10);
+    //add<int>(root, 50);
+    //add<int>(root, 60);
+    //add<int>(root, 32);
+    //add<int>(root, 9);
+    //add<int>(root, -1);
+    //add<int>(root, 10);
     printTree<int>(root);
     std::cout << "h: " << height<int>(root) << "\n";
     std::cout << "we: " << weight<int>(root) << "\n";
+
+    // Rebalance
+    std::cout << "------------------ Rebalance \n";
+    root = balance<int>(root);
+    printTree<int>(root);
+    std::cout << "Rebalanced h: " << height<int>(root) << "\n";
+    std::cout << "Rebalanced we: " << weight<int>(root) << "\n";
+
     return 0;
 }
