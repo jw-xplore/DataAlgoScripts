@@ -22,6 +22,7 @@ public:
 };
 
 template <typename T> BTSNode<T>* balance(BTSNode<T>* node);
+template <typename T> void printTree(BTSNode<T>* root);
 
 // Search for value in tree
 template <typename T>
@@ -65,7 +66,7 @@ BTSNode<T>* add(BTSNode<T>* node, T value)
             */
         }
         else
-            node = add<T>(node->leftNode, value); // Iterate to left
+            node->leftNode = add<T>(node->leftNode, value); // Iterate to left
     }
 
     // Right
@@ -82,7 +83,16 @@ BTSNode<T>* add(BTSNode<T>* node, T value)
             */
         }
         else
-            node = add<T>(node->rightNode, value); // Iterate to left
+            node->rightNode = add<T>(node->rightNode, value); // Iterate to left
+    }
+
+    // Balance
+    if (node->parent == nullptr)
+    {
+        node = balance<T>(node);
+        // Debug
+        std::cout << "add \n";
+        printTree(node);
     }
 
     return node;
@@ -136,10 +146,10 @@ BTSNode<T>* balance(BTSNode<T>* node)
 
     // Rebalance children
     if (node->leftNode != nullptr)
-        balance(node->leftNode);
+        node->leftNode = balance(node->leftNode);
 
     if (node->rightNode != nullptr)
-        balance(node->rightNode);
+        node->rightNode = balance(node->rightNode);
 
     // Check balance and children balance
     int w = weight(node);
@@ -153,6 +163,9 @@ BTSNode<T>* balance(BTSNode<T>* node)
     BTSNode<T>* smallest = nullptr; // left
     BTSNode<T>* largest = nullptr; // rigth
 
+    BTSNode<T>* prevLeft = nullptr;
+    BTSNode<T>* prevRight = nullptr;
+
     // Left heavy
     if (w > 0)
     {
@@ -165,11 +178,14 @@ BTSNode<T>* balance(BTSNode<T>* node)
             smallest = node->leftNode->leftNode;
             largest = node;
 
+            if (node->leftNode != nullptr)
+                prevLeft = node->leftNode->rightNode;
+
             largest->leftNode = nullptr;
         }
 
         // Left-right rotation
-        if (lw < 0)
+        if (lw <= 0)
         {
             newRoot = node->leftNode->rightNode;
             smallest = node->leftNode;
@@ -192,11 +208,14 @@ BTSNode<T>* balance(BTSNode<T>* node)
             smallest = node;
             largest = node->rightNode->rightNode;
 
+            if (node->rightNode != nullptr)
+                prevRight = node->rightNode->leftNode;
+
             smallest->rightNode = nullptr;
         }
 
         // Right-left rotation
-        if (rw > 0)
+        if (rw >= 0)
         {
             newRoot = node->rightNode->leftNode;
             smallest = node;
@@ -212,9 +231,22 @@ BTSNode<T>* balance(BTSNode<T>* node)
     largest->parent = newRoot;
     smallest->parent = newRoot;
 
+    if (prevLeft != nullptr)
+    {
+        prevLeft->parent = largest;
+        largest->leftNode = prevLeft;
+    }
+
+    if (prevRight != nullptr)
+    {
+        prevRight->parent = smallest;
+        smallest->rightNode = prevRight;
+    }
+
     node = newRoot;
     node->leftNode = smallest;
     node->rightNode = largest;
+
     return node;
 }
 
@@ -265,26 +297,34 @@ void printTree(BTSNode<T>* root)
 
 int main() {
     BTSNode<int>* root = new BTSNode<int>(5);
-    add<int>(root, 8);
-    //d<int>(root, 6);
-    add<int>(root, 2);
-    add<int>(root, 10);
-    //add<int>(root, 50);
-    //add<int>(root, 60);
-    //add<int>(root, 32);
+    root = add<int>(root, 8);
+    root = add<int>(root, 3);
+    root = add<int>(root, 4);
+    root = add<int>(root, 5);
+    root = add<int>(root, 6);
+    root = add<int>(root, 70);
+    root = add<int>(root, 8);
+    root = add<int>(root, -2);
+    root = add<int>(root, 10);
+    root = add<int>(root, 2);
     //add<int>(root, 9);
     //add<int>(root, -1);
     //add<int>(root, 10);
+
+    /*
     printTree<int>(root);
     std::cout << "h: " << height<int>(root) << "\n";
     std::cout << "we: " << weight<int>(root) << "\n";
+    */
 
     // Rebalance
+    /*
     std::cout << "------------------ Rebalance \n";
     root = balance<int>(root);
     printTree<int>(root);
     std::cout << "Rebalanced h: " << height<int>(root) << "\n";
     std::cout << "Rebalanced we: " << weight<int>(root) << "\n";
+    */
 
     return 0;
 }
