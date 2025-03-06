@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 //--------------------------------------------
 // BTS and functions
@@ -59,11 +60,6 @@ BTSNode<T>* add(BTSNode<T>* node, T value)
         {
             // Add
             node->leftNode = new BTSNode<T>(value, node);
-
-            /*
-            if (node->parent != nullptr)
-                node->parent = balance<T>(node->parent);
-            */
         }
         else
             node->leftNode = add<T>(node->leftNode, value); // Iterate to left
@@ -76,23 +72,29 @@ BTSNode<T>* add(BTSNode<T>* node, T value)
         {
             // Add
             node->rightNode = new BTSNode<T>(value, node);
-
-            /*
-            if (node->parent != nullptr)
-                node->parent = balance<T>(node->parent);
-            */
         }
         else
             node->rightNode = add<T>(node->rightNode, value); // Iterate to left
     }
 
+    return node;
+}
+
+// Insert value to tree and rebalance tree afterwards
+template <typename T>
+BTSNode<T>* addAndBalance(BTSNode<T>* node, T value)
+{
+    // Fail
+    if (node == nullptr)
+        return node;
+
+    // Add
+    node = add<T>(node, value);
+
     // Balance
     if (node->parent == nullptr)
     {
         node = balance<T>(node);
-        // Debug
-        std::cout << "add \n";
-        printTree(node);
     }
 
     return node;
@@ -295,36 +297,76 @@ void printTree(BTSNode<T>* root)
 // Program run
 //--------------------------------------------
 
+template <typename T>
+BTSNode<int>* treeTest(T data[], int dataSize, const char* name, bool balanced = false)
+{
+    std::cout << "Run test: " << name << " ------------------------------------ \n";
+
+    BTSNode<int>* root = new BTSNode<int>(data[0]);
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+    for (int i = 1; i < dataSize; i++)
+    {
+        if (balanced)
+            root = addAndBalance<int>(root, data[i]);
+        else
+            root = add<int>(root, data[i]);
+    }
+
+    std::cout << name << " add time: " << std::chrono::duration_cast<std::chrono::microseconds>((std::chrono::steady_clock::now() - begin)).count() << "ms \n";
+
+    /*
+    begin = std::chrono::steady_clock::now();
+    printTree(root);
+    std::cout << name << " print time: " << std::chrono::duration_cast<std::chrono::microseconds>((std::chrono::steady_clock::now() - begin)).count() << "ms \n";
+    */
+    begin = std::chrono::steady_clock::now();
+    find<int>(root, 999);
+    std::cout << name << " find time: " << std::chrono::duration_cast<std::chrono::microseconds>((std::chrono::steady_clock::now() - begin)).count() << "ms \n";
+
+    std::cout << "Finished test: " << name << " ------------------------------------ \n\n";
+
+    return root;
+}
+
+int* randomDataSet(int size, int min, int max)
+{
+    int* data = new int[size];
+
+    for (int i = 1; i < size; i++)
+    {
+        data[i] = rand() % max - min;
+    }
+
+    return data;
+}
+
+int* linearDataSet(int size)
+{
+    int* data = new int[size];
+
+    for (int i = 1; i < size; i++)
+    {
+        data[i] = i;
+    }
+
+    return data;
+}
+
 int main() {
-    BTSNode<int>* root = new BTSNode<int>(5);
-    root = add<int>(root, 8);
-    root = add<int>(root, 3);
-    root = add<int>(root, 4);
-    root = add<int>(root, 5);
-    root = add<int>(root, 6);
-    root = add<int>(root, 70);
-    root = add<int>(root, 8);
-    root = add<int>(root, -2);
-    root = add<int>(root, 10);
-    root = add<int>(root, 2);
-    //add<int>(root, 9);
-    //add<int>(root, -1);
-    //add<int>(root, 10);
 
-    /*
-    printTree<int>(root);
-    std::cout << "h: " << height<int>(root) << "\n";
-    std::cout << "we: " << weight<int>(root) << "\n";
-    */
+    // Data
+    int dataL = 2500;
+    int* data = randomDataSet(dataL, 1, 1000000);
 
-    // Rebalance
-    /*
-    std::cout << "------------------ Rebalance \n";
-    root = balance<int>(root);
-    printTree<int>(root);
-    std::cout << "Rebalanced h: " << height<int>(root) << "\n";
-    std::cout << "Rebalanced we: " << weight<int>(root) << "\n";
-    */
+    int worstDataL = 2500;
+    int* worstData = linearDataSet(worstDataL);
 
-    return 0;
+    // Regular BST
+    BTSNode<int>* root = treeTest<int>(data, dataL, "Regular");
+    BTSNode<int>* worstTree = treeTest<int>(worstData, worstDataL, "Worst");
+
+    // Balanced BST - AVL style
+    BTSNode<int>* balanced = treeTest<int>(data, dataL, "Balanced", true);
+    BTSNode<int>* worstBalanced = treeTest<int>(worstData, worstDataL, "Balanced worst", true);
 }
